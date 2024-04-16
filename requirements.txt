@@ -1,0 +1,8 @@
+setuptools~=68.2.0
+pillow~=10.3.0
+transformers~=4.38.2
+torch~=2.2.2
+torchvision~=0.17.2
+rich~=13.7.1
+alive-progress
+sensencepiece~=0.2.0
