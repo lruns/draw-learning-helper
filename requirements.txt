@@ -5,4 +5,5 @@ torch~=2.2.2
 torchvision~=0.17.2
 rich~=13.7.1
 alive-progress
-sensencepiece~=0.2.0
+sentencepiece~=0.2.0
+sacremoses~=0.1.1

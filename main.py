@@ -9,17 +9,17 @@ from unique_search_model import UniqueSearchModel
 
 def load_modules():
     print("Загружаем модули для работы программы:")
-    with alive_bar(2) as bar:
+    with alive_bar(3) as bar:
         photo_manager = photoManager()
         bar()
-        # similarity = SimilarityModel()
-        # bar()
+        similarity = SimilarityModel()
+        bar()
         unique_search = UniqueSearchModel()
         # image = Image.open('demo.jpg')
         # unique_search.is_duplicate(image, image)
         bar()
     print("Модули загружены!")
-    return photo_manager, None, unique_search
+    return photo_manager, similarity, unique_search
 
 
 def main():

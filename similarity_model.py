@@ -11,9 +11,9 @@ class SimilarityModel:
         self.sentence_predictor = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         self.image_to_text_predictor = pipeline("image-to-text", model="Abdou/vit-swin-base-224-gpt2-image-captioning")
 
-        # self.tokenizer_en_ru = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
-        # self.model_en_ru = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
-        #
+        self.tokenizer_en_ru = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
+        self.model_en_ru = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
+
         # self.tokenizer_ru_en = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-ru-en")
         # self.model_ru_en = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-ru-en")
 
@@ -29,15 +29,16 @@ class SimilarityModel:
     def _translate_en_ru(self, input="Input a text to translate"):
         return self._translate(input, self.tokenizer_en_ru, self.model_en_ru)
 
-    def _translate_ru_en(self, input="Введите текст для перевода"):
-        return self._translate(input, self.tokenizer_ru_en, self.model_ru_en)
+    # def _translate_ru_en(self, input="Введите текст для перевода"):
+    #     return self._translate(input, self.tokenizer_ru_en, self.model_ru_en)
 
-    def _translate(input, tokenizer, model):
+    def _translate(self, input, tokenizer, model):
         input_ids = tokenizer.encode(input, return_tensors="pt")
         outputs = model.generate(input_ids, max_length=512)
         return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     # Return True - if paint and task similar
+    # You can choose language of task - english or russian
     def compare_paint_and_task(self, paint, task, lang='en'):
         generated_text = self._image_to_text(paint)
         print(generated_text)
