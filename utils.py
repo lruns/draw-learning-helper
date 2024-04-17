@@ -11,8 +11,8 @@ class Manager:
         pass
 
 
-def open_image(image):
-    image = Image.open(image)
+def open_image(image_path):
+    image = Image.open(image_path)
     image.show()
 
 def get_next_id(data, ID_POSITION):

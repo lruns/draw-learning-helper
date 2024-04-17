@@ -7,3 +7,4 @@ rich~=13.7.1
 alive-progress
 sentencepiece~=0.2.0
 sacremoses~=0.1.1
+numpy~=1.26.4
