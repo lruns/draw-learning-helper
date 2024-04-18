@@ -47,7 +47,7 @@ class TaskManager(Manager):
             choice = input("\nВыберите номер задания или введите quit для выхода: ")
             if choice.isdigit() and -1 < int(choice) < len(self.tasks):
                 task = self.tasks[int(choice)]
-                print(f"Задание {task[TASK_NAME]} выбрано")
+                print(f"Задание `{task[TASK_NAME]}` выбрано")
                 return task
             elif choice == 'quit' or choice == 'q':
                 break

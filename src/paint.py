@@ -137,7 +137,7 @@ class PaintManager(Manager):
             for i in range(len(paints)):
                 paint = paints[i]
                 task = task_manager.find_task(paint[TASK_ID])
-                print(f"{i}. {paint[IMAGE_NAME]} - задание {task[TASK_NAME]}")
+                print(f"{i}. {paint[IMAGE_NAME]} - задание `{task[TASK_NAME]}`")
 
             choice = input("\nВыберите номер рисунка для просмотра или поиска похожих. Или наберите quit для выхода: ")
             if choice.isdigit() and -1 < int(choice) < len(paints):

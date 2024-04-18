@@ -1,0 +1,34 @@
+@startuml packages
+set namespaceSeparator none
+package "src" as src {
+}
+package "src.config" as src.config {
+}
+package "src.main" as src.main {
+}
+package "src.paint" as src.paint {
+}
+package "src.similarity" as src.similarity {
+}
+package "src.task" as src.task {
+}
+package "src.unique_search" as src.unique_search {
+}
+package "src.user" as src.user {
+}
+package "src.utils" as src.utils {
+}
+src.main --> src.config
+src.main --> src.paint
+src.main --> src.similarity
+src.main --> src.task
+src.main --> src.unique_search
+src.main --> src.user
+src.paint --> src.task
+src.paint --> src.utils
+src.paint --> src.utils
+src.task --> src.utils
+src.task --> src.utils
+src.user --> src.utils
+src.user --> src.utils
+@enduml

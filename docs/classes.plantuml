@@ -1,0 +1,69 @@
+@startuml classes
+set namespaceSeparator none
+class "ConfigController" as src.config.ConfigController {
+  config_file
+  folder_path : bytes, str
+  managers : NoneType
+  get_main_folder()
+  initialize(managers)
+  save_on_close()
+}
+class "Manager" as src.utils.Manager {
+  {abstract}load_folder_configs(main_folder_path)
+  {abstract}save_folder_configs()
+}
+class "PaintManager" as src.paint.PaintManager {
+  image_data : list
+  image_data_filepath : str
+  main_folder_path : NoneType
+  check_work_dialog(image_data)
+  checked_works_dialog(student_id, task_manager, similarity, unique_search)
+  create_paint_dialog(student_id, task, similarity, unique_search)
+  get_image(image_id)
+  get_not_checked_works(student_id)
+  load_folder_configs(main_folder_path)
+  open_image_window(image_id)
+  save_folder_configs()
+  show_images_by_ids(image_ids, title)
+  show_images_dialog(student_id, unique_search, task_manager, other_student_name)
+}
+class "SimilarityModel" as src.similarity.SimilarityModel {
+  image_to_text_predictor
+  model_en_ru
+  sentence_predictor : SentenceTransformer
+  tokenizer_en_ru : PreTrainedTokenizerFast
+  compare_paint_and_task(paint, task, lang)
+}
+class "TaskManager" as src.task.TaskManager {
+  main_folder_path : NoneType
+  tasks : list
+  tasks_filepath : str
+  choose_task_dialog()
+  create_task_dialog()
+  find_task(task_id)
+  load_folder_configs(main_folder_path)
+  save_folder_configs()
+  show_description(task)
+}
+class "UniqueSearchModel" as src.unique_search.UniqueSearchModel {
+  all_embeddings : dict
+  extractor
+  model
+  transformation_chain : Compose
+  add_image(image, id)
+  fetch_similar(image, top_k)
+  find_duplicates(image)
+  initialize(images_ids)
+  remove_image(id)
+}
+class "UserManager" as src.user.UserManager {
+  main_folder_path : NoneType
+  users : list
+  users_filepath : str
+  choose_user_dialog()
+  create_user_dialog()
+  get_students()
+  load_folder_configs(main_folder_path)
+  save_folder_configs()
+}
+@enduml
