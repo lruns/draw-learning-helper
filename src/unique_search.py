@@ -85,6 +85,6 @@ def test():
     for i in range(1, 8):
         image = Image.open("./test_images/2/" + str(i) + ".jpg")
         unique_search.add_image(image, i + 20)
-    image_last = Image.open("test_images/2/8.jpg")
+    image_last = Image.open("../test_images/2/8.jpg")
     print(unique_search.fetch_similar(image_last, 5))
     print(unique_search.find_duplicates(image_last))

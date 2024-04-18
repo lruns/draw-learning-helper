@@ -1,10 +1,11 @@
 setuptools~=68.2.0
 pillow~=10.3.0
 transformers~=4.38.2
+sentence-transformers~=2.7.0
 torch~=2.2.2
 torchvision~=0.17.2
 rich~=13.7.1
-alive-progress
+alive-progress~=3.1.5
 sentencepiece~=0.2.0
 sacremoses~=0.1.1
 numpy~=1.26.4

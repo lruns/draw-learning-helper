@@ -5,9 +5,9 @@ with open('requirements.txt') as f:
 
 setup(
     name='draw-learning-helper',
-    version='0.1.0',
-    py_modules=['main'],
-    install_reqs=required,
+    version='1.0.0',
+    package_dir={"": "src"},
+    install_requires=required,
     entry_points={
         'console_scripts': [
             'draw-learning-helper = main:main',
