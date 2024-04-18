@@ -5,7 +5,7 @@ from datetime import datetime
 from PIL import Image
 
 import utils
-from task import DESCRIPTION
+from task import DESCRIPTION, TASK_NAME
 from utils import Manager, open_image
 
 ID = 0
@@ -109,7 +109,8 @@ class PaintManager(Manager):
         relate_to_task = similarity.compare_paint_and_task(img, task[DESCRIPTION])
         duplicat = len(unique_search.find_duplicates(img)) > 0
 
-        image_data = [id, image_name, task_id, student_id, upload_date, str(relate_to_task), str(duplicat), None, None, None,
+        image_data = [id, image_name, task_id, student_id, upload_date, str(relate_to_task), str(duplicat), None, None,
+                      None,
                       None]
         self.image_data.append(image_data)
 
@@ -119,28 +120,50 @@ class PaintManager(Manager):
         print(f"Изображение `{image_name}` добавлено.")
         return id
 
-    def show_images_dialog(self, student_id, other_student_name=None):
-        # todo: нужен функционал, чтобы можно было найти по своему рисунку похожие
+    def show_images_dialog(self, student_id, unique_search, task_manager, other_student_name=None):
         paints = self._view_student_works(student_id)
         if len(paints) < 1:
-            print("Пока нет рисунков.")
+            print("\nПока нет рисунков.")
             input("Продолжить (нажмите enter)...")
             return
 
-        if other_student_name is None:
-            print("Ваши работы: ")
-        else:
-            print(f"Работы студента {other_student_name}: ")
-
-        for i in range(len(paints)):
-            paint = paints[i]
-            print(f"{i}. {paint[IMAGE_NAME]} - задание {paint[TASK_ID]}")
-
         while True:
-            choice = input("\nВыберите номер рисунка для просмотра или наберите quit для выхода: ")
+            print()
+            if other_student_name is None:
+                print("Ваши работы: ")
+            else:
+                print(f"Работы студента `{other_student_name}`: ")
+
+            for i in range(len(paints)):
+                paint = paints[i]
+                task = task_manager.find_task(paint[TASK_ID])
+                print(f"{i}. {paint[IMAGE_NAME]} - задание {task[TASK_NAME]}")
+
+            choice = input("\nВыберите номер рисунка для просмотра или поиска похожих. Или наберите quit для выхода: ")
             if choice.isdigit() and -1 < int(choice) < len(paints):
-                self.open_image_window(paints[int(choice)][ID])
-                print("Открываем...")
+                chosen_image_id = paints[int(choice)][ID]
+
+                while True:
+                    choice2 = input("Наберите open для просмотра или search для поиска похожих изображений."
+                                    " Или наберите quit для выхода: ")
+                    if choice2 == 'open' or choice2 == 'open':
+                        self.open_image_window(chosen_image_id)
+                        print("Открываем...")
+                        break
+                    elif choice2 == 'search' or choice2 == 's':
+                        ids = unique_search.fetch_similar(self.get_image(chosen_image_id))
+                        try:
+                            ids.remove(chosen_image_id)
+                        except ValueError:
+                            pass
+                        self.show_images_by_ids(ids, "Поиск выдал следующие похожие изображения:")
+                        break
+                    elif choice2 == 'quit' or choice2 == 'q':
+                        break
+                    else:
+                        print("Некорректный ввод. Попробуйте ещё.")
+                        continue
+
             elif choice == 'quit' or choice == 'q':
                 break
             else:

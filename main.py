@@ -7,8 +7,8 @@ from task import TaskManager, TASK_NAME
 from unique_search import UniqueSearchModel
 from user import UserManager, ROLE, ID, FULL_NAME
 
-# import warnings
-# warnings.filterwarnings("ignore")
+import warnings
+warnings.filterwarnings("ignore")
 
 config_controller: ConfigController
 user_manager: UserManager
@@ -69,8 +69,7 @@ def show_other_students_works():
         choice = input("\nВыберите студента или наберите quit для выхода: ")
         if choice.isdigit() and -1 < int(choice) < len(students):
             student = students[int(choice)]
-            print(f"Студент {student[FULL_NAME]} выбран")
-            paint_manager.show_images_dialog(student[ID])
+            paint_manager.show_images_dialog(student[ID], unique_search, task_manager, student[FULL_NAME])
         elif choice == "quit" or choice == "q":
             break
         else:
@@ -170,7 +169,7 @@ def main_commands():
                     continue
                 paint_manager.create_paint_dialog(current_user[ID], task, similarity, unique_search)
             elif choice == '2':
-                paint_manager.show_images_dialog(current_user[ID])
+                paint_manager.show_images_dialog(current_user[ID], unique_search, task_manager)
             elif choice == '3':
                 show_other_students_works()
             elif choice == '4':
