@@ -1,8 +1,11 @@
 import csv
 import os
-import shutil
+from datetime import datetime
+
+from PIL import Image
 
 import utils
+from task import DESCRIPTION
 from utils import Manager, open_image
 
 ID = 0
@@ -10,6 +13,12 @@ IMAGE_NAME = 1
 TASK_ID = 2
 STUDENT_ID = 3
 UPLOAD_DATE = 4
+MAYBE_RELATE_TO_TASK = 5
+MAYBE_DUPLICAT = 6
+APPROVED = 7
+COMMENT = 8
+CHECK_DATE = 9
+CORRECTED_IMAGE_ID = 10
 
 
 class PaintManager(Manager):
@@ -32,19 +41,11 @@ class PaintManager(Manager):
     def save_folder_configs(self):
         with open(self.image_data_filepath, 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['Id', 'Image Name', 'Task Id', 'Student Id', 'Upload Date'])
+            writer.writerow(
+                ['Id', 'Image Name', 'Task Id', 'Student Id', 'Upload Date', 'Maybe relate to task',
+                 'Maybe duplicat', 'Approved', 'Comment', 'Check Date', 'Corrected by student - next image id'])
             writer.writerows(self.image_data)
         pass
-
-    def add_image(self, image_filepath, image_name, task_id, student_id, upload_date):
-        id = utils.get_next_id(self.image_data, ID)
-
-        image_data = [id, image_name, task_id, student_id, upload_date]
-        self.image_data.append(image_data)
-
-        # Copying the image to the destination folder
-        destination_path = os.path.join(self.main_folder_path, id)
-        shutil.copy(image_filepath, destination_path)
 
     # def delete_image(self, id):
     #     for row in self.image_data:
@@ -52,24 +53,26 @@ class PaintManager(Manager):
     #             self.image_data.remove(row)
     #             break
 
-    def view_student_works(self, student_id):
+    def _view_student_works(self, student_id):
         student_image_data = []
         for row in self.image_data:
             if row[STUDENT_ID] == student_id:
                 student_image_data.append(row)
         return student_image_data
 
-    def view_task_works(self, task_id):
+    def _view_task_works(self, task_id):
         task_image_data = []
         for row in self.image_data:
             if row[TASK_ID] == task_id:
                 task_image_data.append(row)
         return task_image_data
 
-    def view_image(self, id):
-        for row in self.image_data:
-            if row[ID] == id:
-                open_image(row[ID])
+    def open_image_window(self, image_id):
+        open_image(os.path.join(self.main_folder_path, image_id + ".jpg"))
+
+    def get_image(self, image_id):
+        path = os.path.join(self.main_folder_path, image_id + ".jpg")
+        return Image.open(path)
 
     # def search_image_by_name(self, image_name):
     #     for row in self.image_data:
@@ -78,3 +81,189 @@ class PaintManager(Manager):
     #             break
     #     else:
     #         print("Image not found.")
+
+    def create_paint_dialog(self, student_id, task, similarity, unique_search):
+        print("\nВнимание! Если рисунок не будет соответствовать выбранному заданию или если рисунок будет "
+              "являться плагиатом, то проверяющий отклонит Ваш рисунок!")
+        while True:
+            image_filepath = input("Введите путь к изображению (должен быть формат jpg или png): ")
+            if os.path.exists(image_filepath) and image_filepath.lower().endswith(
+                    ('.png', '.jpg', '.jpeg')):
+                break
+            else:
+                print("Некорректный путь. Введите правильный")
+                continue
+
+        image_name = input("Введите имя изображения: ")
+        task_id = task[ID]
+        upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        id = utils.get_next_id(self.image_data, ID)
+
+        # Converting and copying the image to the destination folder
+        raw_img = Image.open(image_filepath)
+        img = raw_img.convert('RGB')
+        destination_path = os.path.join(self.main_folder_path, id + '.jpg')
+        img.save(destination_path, 'JPEG')
+
+        relate_to_task = similarity.compare_paint_and_task(img, task[DESCRIPTION])
+        duplicat = len(unique_search.find_duplicates(img)) > 0
+
+        image_data = [id, image_name, task_id, student_id, upload_date, str(relate_to_task), str(duplicat), None, None, None,
+                      None]
+        self.image_data.append(image_data)
+
+        unique_search.add_image(img, id)
+
+        self.save_folder_configs()
+        print(f"Изображение `{image_name}` добавлено.")
+        return id
+
+    def show_images_dialog(self, student_id, other_student_name=None):
+        # todo: нужен функционал, чтобы можно было найти по своему рисунку похожие
+        paints = self._view_student_works(student_id)
+        if len(paints) < 1:
+            print("Пока нет рисунков.")
+            input("Продолжить (нажмите enter)...")
+            return
+
+        if other_student_name is None:
+            print("Ваши работы: ")
+        else:
+            print(f"Работы студента {other_student_name}: ")
+
+        for i in range(len(paints)):
+            paint = paints[i]
+            print(f"{i}. {paint[IMAGE_NAME]} - задание {paint[TASK_ID]}")
+
+        while True:
+            choice = input("\nВыберите номер рисунка для просмотра или наберите quit для выхода: ")
+            if choice.isdigit() and -1 < int(choice) < len(paints):
+                self.open_image_window(paints[int(choice)][ID])
+                print("Открываем...")
+            elif choice == 'quit' or choice == 'q':
+                break
+            else:
+                print("Некорректный номер. Введите правильный")
+                continue
+
+    def show_images_by_ids(self, image_ids, title):
+        if len(image_ids) < 1:
+            print("Нет рисунков по данному запросу.")
+            input("Продолжить (нажмите enter)...")
+            return
+        else:
+            print(title)
+
+        paints = []
+        for row in self.image_data:
+            if row[ID] in image_ids:
+                paints.append(row)
+
+        for i in range(len(paints)):
+            paint = paints[i]
+            print(f"{i}. {paint[IMAGE_NAME]}")
+
+        while True:
+            choice = input("\nВыберите номер рисунка для просмотра или наберите quit для выхода: ")
+            if choice.isdigit() and -1 < int(choice) < len(paints):
+                self.open_image_window(paints[int(choice)][ID])
+                print("Открываем...")
+            elif choice == 'quit' or choice == 'q':
+                break
+            else:
+                print("Некорректный номер. Введите правильный")
+                continue
+
+    def get_not_checked_works(self, student_id=None):
+        not_checked_works = []
+        for row in self.image_data:
+            try:
+                exist = row[APPROVED]
+                if exist is None or not exist:
+                    not_checked_works.append(row)
+            except IndexError:
+                pass
+        return not_checked_works
+
+    def check_work_dialog(self, image_data):
+        approved = None
+        while True:
+            choice = input("\nНаберите accept или decline для подтверждения или отклонения работы соответственно. Или "
+                           "наберите quit для выхода: ")
+            if choice == 'accept' or choice == 'a':
+                approved = True
+                break
+            elif choice == 'decline' or choice == 'd':
+                approved = False
+                break
+            elif choice == 'quit' or choice == 'q':
+                return False
+            else:
+                print("Некорректный номер. Введите правильный")
+                continue
+
+        comment = input("Пожалуйста, напишите комментарий к работе: ")
+        image_data[APPROVED] = str(approved)
+        image_data[COMMENT] = comment
+        image_data[CHECK_DATE] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.save_folder_configs()
+        return True
+
+    def checked_works_dialog(self, student_id, task_manager, similarity, unique_search):
+
+        approved_works = []
+        declined_works = []
+
+        for row in self.image_data:
+            if row[STUDENT_ID] != student_id:
+                continue
+            try:
+                correct_id = row[CORRECTED_IMAGE_ID]
+                if not (correct_id is None or not correct_id):
+                    continue
+            except IndexError:
+                continue
+            try:
+                approved = row[APPROVED]
+                if approved == 'True':
+                    approved_works.append(row)
+                elif approved == 'False':
+                    declined_works.append(row)
+            except IndexError:
+                pass
+
+        if len(approved_works) + len(declined_works) == 0:
+            print("Пока нет никаких проверок. Попросите преподавателя проверить, если ранее загрузили работу.")
+            input("Продолжить (нажмите enter)...")
+            return
+
+        if len(approved_works) > 0:
+            print("\nПринятые работы:")
+            for i in range(len(approved_works)):
+                paint = approved_works[i]
+                print(f"{i}. {paint[IMAGE_NAME]} - комментарий: {paint[COMMENT]}")
+
+        if len(declined_works) > 0:
+            print("Отклоненные работы:")
+            for i in range(len(declined_works)):
+                paint = declined_works[i]
+                print(f"{i}. {paint[IMAGE_NAME]} - комментарий: {paint[COMMENT]}")
+
+        while True:
+            if len(declined_works) > 0:
+                choice = input("\nВыберите номер отклоненной работы для исправления или наберите quit для выхода: ")
+            else:
+                choice = input("\nОтклоненных работ нет, наберите quit для выхода: ")
+            if choice.isdigit() and -1 < int(choice) < len(declined_works):
+                work = declined_works[int(choice)]
+                task = task_manager.find_task(work[TASK_ID])
+                correct_id = self.create_paint_dialog(student_id, task, similarity, unique_search)
+                work[CORRECTED_IMAGE_ID] = correct_id
+                declined_works.remove(work)
+            elif choice == 'quit' or choice == 'q':
+                break
+            else:
+                print("Некорректный ввод. Введите правильный.")
+                continue

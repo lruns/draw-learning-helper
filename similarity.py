@@ -41,7 +41,7 @@ class SimilarityModel:
     # You can choose language of task - english or russian
     def compare_paint_and_task(self, paint, task, lang='ru'):
         generated_text = self._image_to_text(paint)
-        print(generated_text)
         if lang == 'ru':
             generated_text = self._translate_en_ru(generated_text)
-        print(self._sentence_similarity(task, generated_text) > threshold)
+        similarity = self._sentence_similarity(task, generated_text)
+        return similarity > threshold

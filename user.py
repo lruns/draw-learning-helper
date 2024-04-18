@@ -38,8 +38,8 @@ class UserManager(Manager):
         for i in range(len(self.users)):
             user = self.users[i]
             print(f"{i}. {user[FULL_NAME]} ({user[ROLE]})")
-        choice = input("Выберите номер пользователя: ")
         while True:
+            choice = input("Выберите номер пользователя: ")
             if choice.isdigit() and -1 < int(choice) < len(self.users):
                 user = self.users[int(choice)]
                 print(f"Пользователь {user[FULL_NAME]} выбран")
@@ -60,4 +60,13 @@ class UserManager(Manager):
 
         id = utils.get_next_id(self.users, ID)
         self.users.append([id, fullname, role])
+
+        self.save_folder_configs()
         print(f"Пользователь {role} с именем {fullname} успешно создан.")
+
+    def get_students(self):
+        students = []
+        for row in self.users:
+            if row[ROLE] == 'student':
+                students.append(row)
+        return students

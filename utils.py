@@ -1,5 +1,6 @@
 from PIL import Image
 
+
 class Manager:
     def __init__(self):
         pass
@@ -15,9 +16,10 @@ def open_image(image_path):
     image = Image.open(image_path)
     image.show()
 
+
 def get_next_id(data, ID_POSITION):
     id = 0
     if len(data) > 0:
         last = data[-1]
         id = int(last[ID_POSITION]) + 1
-    return id
+    return str(id)

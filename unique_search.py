@@ -34,25 +34,25 @@ class UniqueSearchModel:
 
         self.all_embeddings = dict()
 
-    def extract_embedding(self, image):
+    def _extract_embedding(self, image):
         image_pp = self.extractor(image, return_tensors="pt")
         features = self.model(**image_pp).last_hidden_state[:, 0].detach().numpy()
         return features.squeeze()
 
     def _get_similarity_mapping(self, image):
         sim_scores = []
-        query_embedding = self.extract_embedding(image)
+        query_embedding = self._extract_embedding(image)
         for embedding in self.all_embeddings.values():
             sim_scores.append(_compute_scores(embedding, query_embedding))
         similarity_mapping = dict(zip(self.all_embeddings.keys(), sim_scores))
         return similarity_mapping
 
-    def start(self, images_ids):
+    def initialize(self, images_ids):
         for image, id in images_ids:
             self.add_image(image, id)
 
     def add_image(self, image, id):
-        self.all_embeddings[id] = self.extract_embedding(image)
+        self.all_embeddings[id] = self._extract_embedding(image)
 
     def remove_image(self, id):
         self.all_embeddings.pop(id)

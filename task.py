@@ -33,7 +33,46 @@ class TaskManager(Manager):
             writer.writerows(self.tasks)
         pass
 
-    def add_task(self, task_name, description):
+    def choose_task_dialog(self):
+        if len(self.tasks) < 1:
+            print("\nПростите, пока нет заданий. Попросите преподавателя создать новое.")
+            input("Продолжить (нажмите enter)...")
+            return
+
+        print("\nСписок заданий:")
+        for i in range(len(self.tasks)):
+            task = self.tasks[i]
+            print(f"{i}. {task[TASK_NAME]}")
+        while True:
+            choice = input("\nВыберите номер задания или введите quit для выхода: ")
+            if choice.isdigit() and -1 < int(choice) < len(self.tasks):
+                task = self.tasks[int(choice)]
+                print(f"Задание {task[TASK_NAME]} выбрано")
+                return task
+            elif choice == 'quit' or choice == 'q':
+                break
+            else:
+                print("Некорректный номер. Введите правильный")
+                continue
+
+    def create_task_dialog(self):
+        task_name = input("Введите имя задания: ")
+        description = input("Опишите подробнее какой рисунок требуется нарисовать: ")
+
         id = utils.get_next_id(self.tasks, ID)
         new_task = [id, task_name, description]
         self.tasks.append(new_task)
+
+        self.save_folder_configs()
+        print(f"Задание с именем `{task_name}` и описанием `{description}` успешно создано.")
+
+    def find_task(self, task_id):
+        for i in range(len(self.tasks)):
+            task = self.tasks[i]
+            if task[ID] == task_id:
+                return task
+        return None
+
+    @staticmethod
+    def show_description(task):
+        print(f"{task[ID]}. Задание {task[TASK_NAME]}. Описание: {task[DESCRIPTION]}")
