@@ -96,8 +96,12 @@ ___
 
 ## Структура программы
 
+___
 ![classes.svg](docs/classes.svg)
+___
 ![packages.svg](docs/packages.svg)
+___
+
 Сгенерировано с помощью `pyreverse`:
 ```
 pip install pylint
