@@ -1,10 +1,10 @@
 @startuml classes
 set namespaceSeparator none
 class "ConfigController" as src.config.ConfigController {
-  config_file
+  default_folder
   folder_path : bytes, str
+  main_config_file
   managers : NoneType
-  get_main_folder()
   initialize(managers)
   save_on_close()
 }

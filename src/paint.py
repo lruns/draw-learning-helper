@@ -68,10 +68,10 @@ class PaintManager(Manager):
         return task_image_data
 
     def open_image_window(self, image_id):
-        open_image(os.path.join(self.main_folder_path, image_id + ".jpg"))
+        open_image(os.path.join(self.main_folder_path, 'paints', image_id + ".jpg"))
 
     def get_image(self, image_id):
-        path = os.path.join(self.main_folder_path, image_id + ".jpg")
+        path = os.path.join(self.main_folder_path, 'paints', image_id + ".jpg")
         return Image.open(path)
 
     # def search_image_by_name(self, image_name):
@@ -103,7 +103,11 @@ class PaintManager(Manager):
         # Converting and copying the image to the destination folder
         raw_img = Image.open(image_filepath)
         img = raw_img.convert('RGB')
-        destination_path = os.path.join(self.main_folder_path, id + '.jpg')
+
+        paints_folder_path = os.path.join(self.main_folder_path, 'paints')
+        if not os.path.exists(paints_folder_path):
+            os.makedirs(paints_folder_path)
+        destination_path = os.path.join(paints_folder_path, id + '.jpg')
         img.save(destination_path, 'JPEG')
 
         relate_to_task = similarity.compare_paint_and_task(img, task[DESCRIPTION])
