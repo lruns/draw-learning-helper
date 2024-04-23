@@ -1,0 +1,23 @@
+@startuml classes
+set namespaceSeparator none
+class ConfigController
+interface Manager
+class PaintManager implements Manager
+class SimilarityModel
+class TaskManager implements Manager
+class UniqueSearchModel
+class UserManager implements Manager
+class Main
+
+Main o-- UniqueSearchModel
+Main o-- SimilarityModel
+Main o-- ConfigController
+Main o-- PaintManager
+Main o-- UserManager
+Main o-- TaskManager
+ConfigController <-- Manager
+PaintManager <.. SimilarityModel
+PaintManager <.. UniqueSearchModel
+PaintManager <.. TaskManager
+
+@enduml

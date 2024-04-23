@@ -1,21 +1,21 @@
 @startuml classes
 set namespaceSeparator none
-class "ConfigController" as src.config.ConfigController {
-  default_folder
-  folder_path : bytes, str
+class ConfigController {
+  default_folder: str
+  folder_path : str
   main_config_file
-  managers : NoneType
+  managers: list<Manager>
   initialize(managers)
   save_on_close()
 }
-class "Manager" as src.utils.Manager {
+interface Manager {
   {abstract}load_folder_configs(main_folder_path)
   {abstract}save_folder_configs()
 }
-class "PaintManager" as src.paint.PaintManager {
+class PaintManager implements Manager {
   image_data : list
   image_data_filepath : str
-  main_folder_path : NoneType
+  main_folder_path : str
   check_work_dialog(image_data)
   checked_works_dialog(student_id, task_manager, similarity, unique_search)
   create_paint_dialog(student_id, task, similarity, unique_search)
@@ -27,15 +27,15 @@ class "PaintManager" as src.paint.PaintManager {
   show_images_by_ids(image_ids, title)
   show_images_dialog(student_id, unique_search, task_manager, other_student_name)
 }
-class "SimilarityModel" as src.similarity.SimilarityModel {
+class SimilarityModel {
   image_to_text_predictor
   model_en_ru
   sentence_predictor : SentenceTransformer
   tokenizer_en_ru : PreTrainedTokenizerFast
   compare_paint_and_task(paint, task, lang)
 }
-class "TaskManager" as src.task.TaskManager {
-  main_folder_path : NoneType
+class TaskManager implements Manager {
+  main_folder_path : str
   tasks : list
   tasks_filepath : str
   choose_task_dialog()
@@ -45,7 +45,7 @@ class "TaskManager" as src.task.TaskManager {
   save_folder_configs()
   show_description(task)
 }
-class "UniqueSearchModel" as src.unique_search.UniqueSearchModel {
+class UniqueSearchModel {
   all_embeddings : dict
   extractor
   model
@@ -56,8 +56,8 @@ class "UniqueSearchModel" as src.unique_search.UniqueSearchModel {
   initialize(images_ids)
   remove_image(id)
 }
-class "UserManager" as src.user.UserManager {
-  main_folder_path : NoneType
+class UserManager implements Manager {
+  main_folder_path : str
   users : list
   users_filepath : str
   choose_user_dialog()
@@ -66,4 +66,30 @@ class "UserManager" as src.user.UserManager {
   load_folder_configs(main_folder_path)
   save_folder_configs()
 }
+class Main {
+  config_controller
+  current_user : list
+  paint_manager
+  similarity
+  task_manager
+  unique_search
+  user_manager
+  check_student_work()
+  main_commands()
+  run()
+  show_other_students_works()
+  user_choose_commands()
+}
+
+Main o-- UniqueSearchModel
+Main o-- SimilarityModel
+Main o-- ConfigController
+Main o-- PaintManager
+Main o-- UserManager
+Main o-- TaskManager
+ConfigController <-- Manager
+PaintManager <.. SimilarityModel
+PaintManager <.. UniqueSearchModel
+PaintManager <.. TaskManager
+
 @enduml

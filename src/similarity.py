@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer, util
 from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+# import datetime
 
 threshold = 0.59
 
@@ -40,8 +41,12 @@ class SimilarityModel:
     # Return True - if paint and task similar
     # You can choose language of task - english or russian
     def compare_paint_and_task(self, paint, task, lang='ru'):
+        # start = datetime.datetime.now()
         generated_text = self._image_to_text(paint)
         if lang == 'ru':
             generated_text = self._translate_en_ru(generated_text)
         similarity = self._sentence_similarity(task, generated_text)
+        # finish = datetime.datetime.now()
+        # print('Время работы: ' + str(finish - start))
         return similarity > threshold
+

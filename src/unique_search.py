@@ -2,6 +2,7 @@ import torch
 import torchvision.transforms as T
 from PIL import Image
 from transformers import AutoFeatureExtractor, AutoModel
+# import datetime
 
 threshold_unique = 0.72
 
@@ -48,8 +49,11 @@ class UniqueSearchModel:
         return similarity_mapping
 
     def initialize(self, images_ids):
+        # start = datetime.datetime.now()
         for image, id in images_ids:
             self.add_image(image, id)
+        # finish = datetime.datetime.now()
+        # print('Время работы: ' + str(finish - start))
 
     def add_image(self, image, id):
         self.all_embeddings[id] = self._extract_embedding(image)
@@ -58,6 +62,7 @@ class UniqueSearchModel:
         self.all_embeddings.pop(id)
 
     def fetch_similar(self, image, top_k=5):
+        # start = datetime.datetime.now()
         similarity_mapping = self._get_similarity_mapping(image)
 
         # Sort the mapping dictionary and return `top_k` candidates.
@@ -65,15 +70,20 @@ class UniqueSearchModel:
             sorted(similarity_mapping.items(), key=lambda x: x[1], reverse=True)
         )
         id_entries = list(similarity_mapping_sorted.keys())[:top_k]
+        # finish = datetime.datetime.now()
+        # print('Время работы: ' + str(finish - start))
         return id_entries
 
     def find_duplicates(self, image):
+        # start = datetime.datetime.now()
         similarity_mapping = self._get_similarity_mapping(image)
 
         similarity_mapping_sorted = dict(
             sorted(similarity_mapping.items(), key=lambda x: x[1], reverse=True)
         )
         id_entries = [k for (k, v) in similarity_mapping_sorted.items() if v > threshold_unique]
+        # finish = datetime.datetime.now()
+        # print('Время работы: ' + str(finish - start))
         return id_entries
 
 
