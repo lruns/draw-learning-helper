@@ -1,13 +1,30 @@
 @startuml classes
 set namespaceSeparator none
-class ConfigController
-interface Manager
-class PaintManager implements Manager
-class SimilarityModel
-class TaskManager implements Manager
-class UniqueSearchModel
-class UserManager implements Manager
-class Main
+package "draw-learning-helper" #fff6de {
+    class ConfigController
+    interface Manager
+    class PaintManager implements Manager
+    class SimilarityModel
+    class TaskManager implements Manager
+    class UniqueSearchModel
+    class UserManager implements Manager
+    class Main
+}
+
+package "sentence_transformers" #def7ff {
+    class SentenceTransformer
+}
+
+package "transformers" #d7f7e8 {
+    class AutoTokenizer
+    class AutoModelForSeq2SeqLM
+    class AutoFeatureExtractor
+    class AutoModel
+}
+
+package "torchvision.transforms" #c9ddf5 {}
+
+
 
 Main o-- UniqueSearchModel
 Main o-- SimilarityModel
@@ -19,5 +36,25 @@ ConfigController <-- Manager
 PaintManager <.. SimilarityModel
 PaintManager <.. UniqueSearchModel
 PaintManager <.. TaskManager
+SimilarityModel.u>SentenceTransformer
+SimilarityModel..>AutoTokenizer
+SimilarityModel..>AutoModelForSeq2SeqLM
+UniqueSearchModel..>AutoFeatureExtractor
+UniqueSearchModel..>AutoModel
+UniqueSearchModel..>torchvision.transforms
+
+note left of ConfigController
+    Хранилище данных:
+    - Файл "\~/Draw learning helper/draw_learning_helper_config.json",
+      хранящий местоположение папки с настройками.
+    - Папка с настройками, где находятся все рисунки и настройки. По
+      умолчанию "\~/Draw learning helper". Содержимое папки:
+        - папка "photos" со всеми рисунками;
+        - файл "image_data.csv", хранящий данные о рисунках, проверках;
+        - файл "users.csv", хранящий данные о пользователях
+        - файл "tasks.csv", хранящий данные о заданиях.
+end note
+
+
 
 @enduml
