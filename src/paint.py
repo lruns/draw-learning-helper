@@ -14,7 +14,7 @@ TASK_ID = 2
 STUDENT_ID = 3
 UPLOAD_DATE = 4
 MAYBE_RELATE_TO_TASK = 5
-MAYBE_DUPLICAT = 6
+MAYBE_DUPLICATE = 6
 APPROVED = 7
 COMMENT = 8
 CHECK_DATE = 9
@@ -43,7 +43,7 @@ class PaintManager(Manager):
             writer = csv.writer(file)
             writer.writerow(
                 ['Id', 'Image Name', 'Task Id', 'Student Id', 'Upload Date', 'Maybe relate to task',
-                 'Maybe duplicat', 'Approved', 'Comment', 'Check Date', 'Corrected by student - next image id'])
+                 'Maybe duplicate', 'Approved', 'Comment', 'Check Date', 'Corrected by student - next image id'])
             writer.writerows(self.image_data)
         pass
 
@@ -111,9 +111,9 @@ class PaintManager(Manager):
         img.save(destination_path, 'JPEG')
 
         relate_to_task = similarity.compare_paint_and_task(img, task[DESCRIPTION])
-        duplicat = len(unique_search.find_duplicates(img)) > 0
+        duplicate = len(unique_search.find_duplicates(img)) > 0
 
-        image_data = [id, image_name, task_id, student_id, upload_date, str(relate_to_task), str(duplicat), None, None,
+        image_data = [id, image_name, task_id, student_id, upload_date, str(relate_to_task), str(duplicate), None, None,
                       None,
                       None]
         self.image_data.append(image_data)

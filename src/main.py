@@ -1,7 +1,7 @@
 from alive_progress import alive_bar
 
 from config import ConfigController
-from paint import PaintManager, IMAGE_NAME, TASK_ID, UPLOAD_DATE, MAYBE_RELATE_TO_TASK, MAYBE_DUPLICAT
+from paint import PaintManager, IMAGE_NAME, TASK_ID, UPLOAD_DATE, MAYBE_RELATE_TO_TASK, MAYBE_DUPLICATE
 from similarity import SimilarityModel
 from task import TaskManager, TASK_NAME
 from unique_search import UniqueSearchModel
@@ -87,7 +87,7 @@ class Main:
             task = self.task_manager.find_task(work[TASK_ID])
             comparable_with_task = "совпадает с заданием" if work[
                 MAYBE_RELATE_TO_TASK] == 'True' else "возможно расхождение с заданием"
-            plagiat = "возможно работа является плагиатом" if work[MAYBE_DUPLICAT] == 'True' else "плагиат не обнаружен"
+            plagiat = "возможно работа является плагиатом" if work[MAYBE_DUPLICATE] == 'True' else "плагиат не обнаружен"
             print(f"{i}. Рисунок {work[IMAGE_NAME]}, задание `{task[TASK_NAME]}`"
                   f" - {comparable_with_task}, {plagiat}, загружен {work[UPLOAD_DATE]}. ")
 
