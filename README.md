@@ -66,6 +66,8 @@ draw-learning-helper
 После выбора пользователя можно будет в любой момент выйти из программы, набрав `quit` или `q`.
 Или выбрать/создать другого пользователя, набрав `user` или `u`.
 
+![activity-init](docs/activity-init.svg)
+
 В зависимости от выбранного пользователя (студент или преподаватель) существует разный набор функций:
 - Для студентов:
   1. Загрузить изображение для задания
@@ -81,6 +83,8 @@ draw-learning-helper
 с написанием комментария. Студент сможет позже посмотреть проверки от преподавателя и загрузить 
 исправленный вариант для задания.
 
+![activity-work](docs/activity-work.svg)
+
 ## Скриншоты работы программы
 
 ___
@@ -95,14 +99,15 @@ ___
 ![screenshot5.jpg](docs/screenshot5.jpg)
 ___
 
-## Структура программы
+## Структура и работа программы
 
 
-![classes.svg](docs/classes.svg)
-
+![classes-compact.svg](docs/classes-compact.svg)
 
 Сгенерировано с помощью `pyreverse`:
 ```
 pip install pylint
 pyreverse -o plantuml .\src\
 ```
+
+![work](docs/sequence-diagram.svg)

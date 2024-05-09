@@ -1,0 +1,33 @@
+@startuml
+Main -> ConfigController: initialize
+ConfigController --> Main: Настройки загружены
+Main -> UserManager: create_user_dialog or\n choose_user_dialog
+UserManager --> Main: Пользователь выбран
+
+alt User is Teacher
+    Main -> TaskManager: create_task_dialog
+    TaskManager --> Main: Преподавателем создано задание
+end
+alt User is Student
+    Main -> TaskManager: choose_task_dialog
+    TaskManager --> Main: Студентом выбрано задание
+    Main -> PaintManager: create_paint_dialog
+    PaintManager -> UniqueSearchModel: find_duplicates
+    UniqueSearchModel --> PaintManager: Проверен на плагиат
+    PaintManager -> SimilarityModel: compare_paint_and_task
+    SimilarityModel --> PaintManager: Было определено соответствие задания и рисунка
+    PaintManager --> Main: Рисунок для выбранного задания загружен
+end
+alt User is Teacher
+    Main -> PaintManager: get_not_checked_works
+    PaintManager --> Main: Список рисунков, требующих проверку
+    Main -> PaintManager: check_work_dialog
+    PaintManager --> Main: Преподавателем проверен рисунок
+end
+alt User is Student
+    Main -> PaintManager: checked_works_dialog
+    PaintManager --> Main: Студент исправляет отправленные на доработку рисунки
+end
+Main -> ConfigController: save_on_close
+ConfigController --> Main: Приложение сохранено
+@enduml
