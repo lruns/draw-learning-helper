@@ -1,0 +1,33 @@
+@startuml
+actor Teacher
+activate Teacher
+Teacher -> Main: запустить программу
+activate Main
+Main -> ConfigController: initialize
+activate ConfigController
+ConfigController --> Main: Настройки загружены
+deactivate ConfigController
+Main -> UserManager: create_user_dialog or\n choose_user_dialog
+activate UserManager
+UserManager --> Main: Пользователь выбран
+deactivate UserManager
+Main -> TaskManager: create_task_dialog
+activate TaskManager
+TaskManager --> Main: Преподавателем создано задание
+deactivate TaskManager
+Main -> PaintManager: get_not_checked_works
+activate PaintManager
+PaintManager --> Main: Список рисунков, требующих проверку
+deactivate PaintManager
+Main -> PaintManager: check_work_dialog
+activate PaintManager
+PaintManager --> Main: Преподавателем проверен рисунок
+deactivate PaintManager
+Main -> ConfigController: save_on_close
+activate ConfigController
+ConfigController --> Main: Приложение сохранено
+deactivate ConfigController
+Teacher <- Main: завершение программы
+deactivate Main
+deactivate Teacher
+@enduml

@@ -1,33 +1,41 @@
 @startuml
+actor Student
+activate Student
+Student -> Main: запустить программу
+activate Main
 Main -> ConfigController: initialize
+activate ConfigController
 ConfigController --> Main: Настройки загружены
+deactivate ConfigController
 Main -> UserManager: create_user_dialog or\n choose_user_dialog
+activate UserManager
 UserManager --> Main: Пользователь выбран
-
-alt User is Teacher
-    Main -> TaskManager: create_task_dialog
-    TaskManager --> Main: Преподавателем создано задание
-end
-alt User is Student
-    Main -> TaskManager: choose_task_dialog
-    TaskManager --> Main: Студентом выбрано задание
-    Main -> PaintManager: create_paint_dialog
-    PaintManager -> UniqueSearchModel: find_duplicates
-    UniqueSearchModel --> PaintManager: Проверен на плагиат
-    PaintManager -> SimilarityModel: compare_paint_and_task
-    SimilarityModel --> PaintManager: Было определено соответствие задания и рисунка
-    PaintManager --> Main: Рисунок для выбранного задания загружен
-end
-alt User is Teacher
-    Main -> PaintManager: get_not_checked_works
-    PaintManager --> Main: Список рисунков, требующих проверку
-    Main -> PaintManager: check_work_dialog
-    PaintManager --> Main: Преподавателем проверен рисунок
-end
-alt User is Student
-    Main -> PaintManager: checked_works_dialog
-    PaintManager --> Main: Студент исправляет отправленные на доработку рисунки
-end
+deactivate UserManager
+Main -> TaskManager: choose_task_dialog
+activate TaskManager
+TaskManager --> Main: Студентом выбрано задание
+deactivate TaskManager
+Main -> PaintManager: create_paint_dialog
+activate PaintManager
+PaintManager -> UniqueSearchModel: find_duplicates
+activate UniqueSearchModel
+UniqueSearchModel --> PaintManager: Проверен на плагиат
+deactivate UniqueSearchModel
+PaintManager -> SimilarityModel: compare_paint_and_task
+activate SimilarityModel
+SimilarityModel --> PaintManager: Было определено соответствие задания и рисунка
+deactivate SimilarityModel
+PaintManager --> Main: Рисунок для выбранного задания загружен
+deactivate PaintManager
+Main -> PaintManager: checked_works_dialog
+activate PaintManager
+PaintManager --> Main: Студент исправляет отправленные на доработку рисунки
+deactivate PaintManager
 Main -> ConfigController: save_on_close
+activate ConfigController
 ConfigController --> Main: Приложение сохранено
+deactivate ConfigController
+Student <- Main: завершение программы
+deactivate Main
+deactivate Student
 @enduml

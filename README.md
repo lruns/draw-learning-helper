@@ -86,7 +86,6 @@ draw-learning-helper
 ![activity-work](docs/activity-work.svg)
 
 ## Скриншоты работы программы
-
 ___
 ![screenshot1.jpg](docs/screenshot1.jpg)
 ___
@@ -100,7 +99,7 @@ ___
 ___
 
 ## Структура и работа программы
-
+### Классовая диаграмма
 
 ![classes-compact.svg](docs/classes-compact.svg)
 
@@ -109,5 +108,6 @@ ___
 pip install pylint
 pyreverse -o plantuml .\src\
 ```
-
+### Диаграммы последовательности для студента и преподавателя
 ![work](docs/sequence-diagram.svg)
+![work2](docs/sequence-diagram2.svg)
