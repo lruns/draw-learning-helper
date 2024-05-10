@@ -109,5 +109,5 @@ pip install pylint
 pyreverse -o plantuml .\src\
 ```
 ### Диаграммы последовательности для студента и преподавателя
-![work](docs/sequence-diagram.svg)
+![work](docs/sequence-diagram1.svg)
 ![work2](docs/sequence-diagram2.svg)
